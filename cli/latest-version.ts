@@ -1,4 +1,5 @@
 import { BuildPlatformsType, isSupportedBuildPlatform } from "./platforms";
+import { xfetch } from "./utils";
 
 export interface LatestVersion {
     type: "stable" | "insiders";
@@ -8,7 +9,7 @@ export interface LatestVersion {
 
 export const getLatestVersion = async (type: LatestVersion["type"]) => {
     const url = `https://code.visualstudio.com/sha?build=${type}`;
-    const resp = await fetch(url);
+    const resp = await xfetch(url);
     const json: {
         products: {
             url: string;

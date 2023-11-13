@@ -3,6 +3,7 @@ import { existsSync } from "fs";
 import { chmod, copyFile, mkdir, rename, rm } from "fs/promises";
 import { BuildPlatformsType } from "./platforms";
 import { LatestVersion } from "./latest-version";
+import { xfetch } from "./utils";
 
 const rootDir = p.resolve(import.meta.dir, "..");
 const artifactsDir = p.join(rootDir, "artifacts");
@@ -190,7 +191,7 @@ const downloadFile = async (url: string, file: string) => {
         console.log(`Skipped downloading "${url}" into "${file}"`);
         return file;
     }
-    const resp = await fetch(url);
+    const resp = await xfetch(url);
     await Bun.write(file, resp);
     console.log(`Downloaded "${url}" into "${file}"`);
     return file;
