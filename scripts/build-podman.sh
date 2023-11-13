@@ -12,7 +12,7 @@ container_name="visual-studio-code-appimages"
 work_dir="/visual-studio-code-appimages"
 
 echo "Starting container..."
-podman run --rm -dti --name "${container_name}" docker.io/library/ubuntu:20.04
+podman run --rm -dti --network host --name "${container_name}" docker.io/library/ubuntu:20.04
 podman wait --condition=running "${container_name}"
 
 echo "Installing dependencies..."

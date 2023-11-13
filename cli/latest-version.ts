@@ -20,7 +20,6 @@ export const getLatestVersion = async (type: LatestVersion["type"]) => {
             };
         }[];
     } = await resp.json();
-    console.log(JSON.stringify(json));
 
     const version = json.products.find((x) => x.productVersion)!.productVersion;
     // @ts-expect-error
