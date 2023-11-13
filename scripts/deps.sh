@@ -6,18 +6,15 @@ self=$(readlink -f "$0")
 here=${self%/*}
 root_dir=$(dirname "${here}")
 
-node_dir="/tmp/node"
 node_version="20.9.0"
-node_file_no_ext="node-v${node_version}-linux-x64"
-node_file="${node_file_no_ext}.tar.gz"
+node_dir="/tmp/node"
 
-mkdir -p "${node_dir}"
-(
-    cd "/tmp"
-    curl --fail "https://nodejs.org/dist/v${node_version}/${node_file}" -O
-    tar -xzf "${node_file}"
-    mv "${node_file_no_ext}" "${node_dir}"
-)
+curl --fail \
+    "https://nodejs.org/dist/v${node_version}/node-v${node_version}-linux-x64.tar.gz" \
+    -o "/tmp/node-v${node_version}-linux-x64.tar.gz"
+tar -xzvf "/tmp/node-v${node_version}-linux-x64.tar.gz" -C "/tmp" "node-v${node_version}-linux-x64"
+mv "/tmp/node-v${node_version}-linux-x64" "${node_dir}"
+
 for x in "node" "npm" "npx"; do
     ln -s "${node_dir}/bin/${x}" "/usr/local/bin/${x}"
 done
