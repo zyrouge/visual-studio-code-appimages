@@ -77,10 +77,11 @@ const buildAppDir = async (
         artifactsDir,
         `${p.basename(inputFile, ".tar.gz")}.AppDir`
     );
-    await rm(appDir, {
-        recursive: true,
-    });
-    await ensureDir(appDir);
+    if (existsSync(appDir)) {
+        await rm(appDir, {
+            recursive: true,
+        });
+    }
     console.log(`Extracting "${inputFile}"`);
     const appDirProc = await xspawn("tar", ["-xvf", inputFile], {
         cwd: artifactsDir,
