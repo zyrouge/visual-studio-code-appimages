@@ -1,7 +1,3 @@
-import { build } from "./build";
-import { getLatestVersion } from "./latest-version";
-import { getRequiredBuilds } from "./required-build";
+import { buildFor } from "./build-for";
 
-const latest = await getLatestVersion("stable");
-const platforms = await getRequiredBuilds(latest.version);
-await build(latest, platforms);
+buildFor("stable");
