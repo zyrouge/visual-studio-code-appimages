@@ -1,6 +1,6 @@
 import { build } from "./build";
 import { LatestVersion, getLatestVersion } from "./latest-version";
-import { getRequiredBuilds } from "./required-build";
+import { getRequiredBuilds } from "./required-builds";
 
 export const buildFor = async (type: LatestVersion["type"]) => {
     const latest = await getLatestVersion(type);
