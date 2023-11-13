@@ -8,7 +8,8 @@ export interface LatestVersion {
 }
 
 export const getLatestVersion = async (type: LatestVersion["type"]) => {
-    const url = `https://code.visualstudio.com/sha?build=${type}`;
+    const buildCode = getBuildCodeFromType(type);
+    const url = `https://code.visualstudio.com/sha?build=${buildCode}`;
     const resp = await xfetch(url);
     const json: {
         products: {
@@ -37,4 +38,13 @@ export const getLatestVersion = async (type: LatestVersion["type"]) => {
         assets,
     };
     return output;
+};
+
+const typeBuildCodeMap: Record<LatestVersion["type"], string> = {
+    stable: "stable",
+    insiders: "insider",
+};
+
+const getBuildCodeFromType = (type: LatestVersion["type"]) => {
+    return typeBuildCodeMap[type];
 };
