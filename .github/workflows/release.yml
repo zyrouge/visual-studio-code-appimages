@@ -59,5 +59,4 @@ jobs:
 
     generate-badge:
         needs: [release]
-        if: always()
         uses: ./.github/workflows/badges.yml
