@@ -37,7 +37,7 @@ jobs:
             - name: 🔢 Get version
               run: |
                   version=$(cat ./dist/build-version.txt)
-                  needs_release=$(./dist/needs-release.sh | xargs)
+                  needs_release=$(./scripts/needs-release.sh | xargs)
                   echo "X_APP_VERSION=${version}" >> $GITHUB_ENV
                   echo "X_TAG_NAME=v${version}" >> $GITHUB_ENV
                   echo "X_NEEDS_RELEASE=${needs_release}" >> $GITHUB_ENV
