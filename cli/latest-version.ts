@@ -10,8 +10,6 @@ export interface LatestVersion {
 export const getLatestVersion = async (type: LatestVersion["type"]) => {
     const url = `https://code.visualstudio.com/sha?build=${type}`;
     const resp = await xfetch(url);
-    console.log(await resp.statusText);
-    console.log(await resp.text());
     const json: {
         products: {
             url: string;
@@ -21,6 +19,7 @@ export const getLatestVersion = async (type: LatestVersion["type"]) => {
             };
         }[];
     } = await resp.json();
+    console.log(JSON.stringify(json));
 
     const version = json.products.find((x) => x.productVersion)!.productVersion;
     // @ts-expect-error
