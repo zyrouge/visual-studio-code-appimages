@@ -1,12 +1,15 @@
 {
     "name": "@zyrouge/visual-studio-code-appimages",
-    "type": "module",
+    "private": true,
     "scripts": {
-        "build-stable": "bun run ./cli/build-stable.ts",
-        "build-insiders": "bun run ./cli/build-insiders.ts"
+        "build-stable": "tsx ./cli/build-stable.ts",
+        "build-insiders": "tsx ./cli/build-insiders.ts"
     },
     "devDependencies": {
-        "bun-types": "latest",
+        "@types/fs-extra": "^11.0.4",
+        "@types/node": "^20.9.0",
+        "fs-extra": "^11.1.1",
+        "tsx": "^4.1.1",
         "typescript": "^5.2.2"
     }
 }

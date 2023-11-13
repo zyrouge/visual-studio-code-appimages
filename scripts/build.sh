@@ -10,5 +10,5 @@ app_release=$1
 
 (
     cd "${root_dir}"
-    bun run "build-${app_release}"
+    npm run "build-${app_release}"
 )

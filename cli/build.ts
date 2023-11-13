@@ -1,11 +1,22 @@
 import p from "path";
-import { existsSync } from "fs";
-import { chmod, copyFile, mkdir, rename, rm } from "fs/promises";
+import {
+    chmod,
+    copyFile,
+    createWriteStream,
+    existsSync,
+    mkdir,
+    readFile,
+    rename,
+    rm,
+    writeFile,
+} from "fs-extra";
 import { BuildPlatformsType } from "./platforms";
 import { LatestVersion } from "./latest-version";
-import { xfetch } from "./utils";
+import { xfetch, xspawn } from "./utils";
+import { Readable } from "stream";
+import { finished } from "stream/promises";
 
-const rootDir = p.resolve(import.meta.dir, "..");
+const rootDir = p.resolve(__dirname, "..");
 const artifactsDir = p.join(rootDir, "artifacts");
 const templatesDir = p.join(rootDir, "templates");
 const outputDir = p.join(rootDir, "dist");
@@ -32,9 +43,9 @@ export const build = async (
         const appDir = await buildAppDir(version.type, platform, inputFile);
         await packAppDir(platform, appImageTool, appDir, outputFile);
     }
-    await Bun.write(p.join(outputDir, "build-version.txt"), version.version);
+    await writeFile(p.join(outputDir, "build-version.txt"), version.version);
     if (platforms.length > 0) {
-        await Bun.write(p.join(outputDir, "build-complete.txt"), "");
+        await writeFile(p.join(outputDir, "build-complete.txt"), "");
     }
 };
 
@@ -46,15 +57,12 @@ const packAppDir = async (
 ) => {
     const arch = getArchFromPlatform(platform);
     console.log(`Packing "${appDir}" into "${outputFile}"`);
-    const proc = Bun.spawn([appImageTool, appDir, outputFile], {
+    const proc = await xspawn(appImageTool, [appDir, outputFile], {
         env: {
-            ...process.env,
             ARCH: arch,
         },
-        stdin: "inherit",
-        stdout: "inherit",
     });
-    if ((await proc.exited) !== 0) {
+    if (proc.exitCode !== 0) {
         throw new Error(`Packing "${appDir}" failed`);
     }
     console.log(`Packed "${appDir}" into "${outputFile}"`);
@@ -74,12 +82,10 @@ const buildAppDir = async (
     });
     await ensureDir(appDir);
     console.log(`Extracting "${inputFile}"`);
-    const appDirProc = Bun.spawn(["tar", "-xvf", inputFile], {
+    const appDirProc = await xspawn("tar", ["-xvf", inputFile], {
         cwd: artifactsDir,
-        stdout: "inherit",
-        stderr: "inherit",
     });
-    if ((await appDirProc.exited) !== 0) {
+    if (appDirProc.exitCode !== 0) {
         throw new Error(`Extracting "${inputFile}" failed`);
     }
     await rename(p.join(artifactsDir, `VSCode-${platform}`), appDir);
@@ -105,12 +111,12 @@ const createDesktopFile = async (
     const name = getNameFromType(type);
     const title = getTitleFromType(type);
     const templateFile = p.join(templatesDir, "visual-studio-code.desktop");
-    const template = await Bun.file(templateFile).text();
+    const template = await readFile(templateFile, "utf-8");
     const content = template
         .replaceAll("@@NAME@@", name)
         .replaceAll("@@TITLE@@", title);
     const desktopFile = p.join(appDir, `${name}.desktop`);
-    await Bun.write(desktopFile, content);
+    await writeFile(desktopFile, content);
     console.log(`Created "${desktopFile}"`);
 };
 
@@ -120,10 +126,10 @@ const createAppRunFile = async (
 ) => {
     const name = getNameFromType(type);
     const templateFile = p.join(templatesDir, "AppRun");
-    const template = await Bun.file(templateFile).text();
+    const template = await readFile(templateFile, "utf-8");
     const content = template.replaceAll("@@NAME@@", name);
     const appRunFile = p.join(appDir, "AppRun");
-    await Bun.write(appRunFile, content);
+    await writeFile(appRunFile, content);
     await chmod(appRunFile, 0o755);
     console.log(`Created "${appRunFile}"`);
 };
@@ -171,12 +177,10 @@ const downloadAppImageTool = async () => {
     await downloadFile(url, appImageFile);
     console.log(`Extracting "${appImageFile}"`);
     await chmod(appImageFile, 0o755);
-    const proc = Bun.spawn([appImageFile, "--appimage-extract"], {
+    const proc = await xspawn(appImageFile, ["--appimage-extract"], {
         cwd: artifactsDir,
-        stdout: "inherit",
-        stderr: "inherit",
     });
-    if ((await proc.exited) !== 0) {
+    if (proc.exitCode !== 0) {
         throw new Error(`Extracting "${appImageFile}" failed`);
     }
     console.log(`Extracted "${appImageFile}"`);
@@ -192,7 +196,9 @@ const downloadFile = async (url: string, file: string) => {
         return file;
     }
     const resp = await xfetch(url);
-    await Bun.write(file, resp);
+    const inputStream = Readable.fromWeb(resp.body!);
+    const outputStream = createWriteStream(file);
+    await finished(inputStream.pipe(outputStream));
     console.log(`Downloaded "${url}" into "${file}"`);
     return file;
 };

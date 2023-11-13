@@ -21,7 +21,7 @@ podman exec "${container_name}" apt-get install -y curl desktop-file-utils image
 
 echo "Copying necessities..."
 podman exec "${container_name}" mkdir "${work_dir}"
-for x in "package.json" "tsconfig.json" "bun.lockb" "cli" "scripts" "templates"; do
+for x in "package.json" "package-lock.json" "tsconfig.json" "cli" "scripts" "templates"; do
     podman cp "./${x}" "${container_name}:${work_dir}/${x}"
 done
 podman exec "${container_name}" find "${work_dir}/scripts" -type f -name "*.sh" -exec chmod +x {} \;
