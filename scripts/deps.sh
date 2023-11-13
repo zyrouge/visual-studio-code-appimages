@@ -7,10 +7,10 @@ here=${self%/*}
 root_dir=$(dirname "${here}")
 
 export BUN_INSTALL=/tmp/bun
-export PATH="$PATH:$BUN_INSTALL/bin"
 
 mkdir -p "$BUN_INSTALL"
 curl -fsSL https://bun.sh/install | bash
+ln -s "$BUN_INSTALL/bin/bun" /usr/local/bin/bun
 
 (
     cd "${root_dir}"
