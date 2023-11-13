@@ -23,10 +23,10 @@ This command requires [Pho](https://github.com/zyrouge/pho) to be installed.
 
 ```bash
 # stable
-pho install github --id android-studio zyrouge/visual-studio-code-appimages
+pho install github --id visual-studio-code zyrouge/visual-studio-code-appimages
 
-# beta
-pho install github --release prerelease --id android-studio zyrouge/visual-studio-code-appimages
+# insiders
+pho install github --release prerelease --id visual-studio-code zyrouge/visual-studio-code-appimages
 ```
 
 ### Manual
