@@ -32,8 +32,7 @@ jobs:
             - name: 🔨 Build executables
               run: |
                   find ./scripts -type f -name "*.sh" -exec chmod +x {} \;
-                  ./scripts/deps.sh
-                  ./scripts/build.sh $X_APP_RELEASE
+                  ./scripts/build-podman.sh $X_APP_RELEASE
 
             - name: 🔢 Get version
               run: |
