@@ -18,8 +18,9 @@ podman wait --condition=running "${container_name}"
 echo "Installing dependencies..."
 podman exec "${container_name}" apt update
 podman exec "${container_name}" apt-get install -y curl desktop-file-utils imagemagick file unzip
+podman exec "${container_name}" export BUN_INSTALL=/tmp/bun
 podman exec "${container_name}" curl -fsSL https://bun.sh/install | bash
-podman exec "${container_name}" exec
+podman exec "${container_name}" export 'PATH="$PATH:$BUN_INSTALL"'
 
 echo "Copying necessities..."
 podman exec "${container_name}" mkdir "${work_dir}"
